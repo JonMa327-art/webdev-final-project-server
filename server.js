@@ -12,25 +12,10 @@ import mongoose from 'mongoose';
 import userController from './controllers/user_controller.js';
 import { response } from 'express';
 
+import reviewController from "./controllers/review_controller.js";
+
 //connects to the webdevFP database
 mongoose.connect('mongodb://localhost:27017/webdevFP');
-
-// const usersSchema = mongoose.Schema({
-//     username: String,
-//     password: String,
-//     email: String,
-//     role: String
-// }, { collection: "users" });
-
-
-// const userModel = mongoose.model('userModel', usersSchema);
-
-// const findAllUsers = async () => {
-//     const users = await userModel.find()
-//     console.log(users)
-// }
-
-// findAllUsers()
 
 //express() creates an instance of the express library and assigns it to app
 const app = express();
@@ -40,6 +25,6 @@ app.use(express.json());
 
 
 app.get('/hello', (req, res) => { res.send('Hello World!') })
-//give the user controller the app conponent
 userController(app)
+reviewController(app)
 app.listen(4000);
