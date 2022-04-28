@@ -6,11 +6,15 @@ const findAllUsers = async () => {
     return await userModel.find();
 }
 
-const findUserBycredentials = async (username, password) => {
-    userModel.findOne({
-        username: username,
-        password: password
+const findUserBycredentials = async (userName, passWord) => {
+    return await userModel.findOne({
+        username: userName,
+        password: passWord
     })
+}
+
+const findUserByEmail = async (email) => {
+    return await userModel.find({ "email": email });
 }
 
 //creates a new user
@@ -20,18 +24,24 @@ const createUser = async (user) => {
 }
 
 //updates a user
-const updateUser = async (uid, user) => {
-    return await userModel.updateOne({ _id: tid }, { $set: user })
-}
+// const updateUser = async (uid, user) => {
+//     return await userModel.updateOne({ _id: uid }, { $set: user })
+// }
 
+
+const updateUser = async (userEmail, user) => {
+    return await userModel.updateOne({ email: userEmail }, { $set: user })
+}
 //updates a user
 const deleteUser = async (uid) => {
-    return await userModel.updateOne({ _id: tid })
+    return await userModel.updateOne({ _id: uid })
 }
 
 //contains all of the functions
 const funcs = {
     findAllUsers,
+    findUserByEmail,
+    findUserBycredentials,
     createUser,
     updateUser,
     deleteUser

@@ -2,6 +2,9 @@
 // Can do it this way since we added  "type": "module" to package.json
 import express from 'express';
 
+// const session = require('express-session');
+import session from 'express-session';
+
 //allows resources to be shared acrcoss domains
 import cors from 'cors';
 
@@ -10,36 +13,34 @@ import mongoose from 'mongoose';
 
 //imports the controllers
 import userController from './controllers/user_controller.js';
-import { response } from 'express';
 
 //connects to the webdevFP database
 mongoose.connect('mongodb://localhost:27017/webdevFP');
 
-// const usersSchema = mongoose.Schema({
-//     username: String,
-//     password: String,
-//     email: String,
-//     role: String
-// }, { collection: "users" });
-
-
-// const userModel = mongoose.model('userModel', usersSchema);
-
-// const findAllUsers = async () => {
-//     const users = await userModel.find()
-//     console.log(users)
-// }
-
-// findAllUsers()
-
 //express() creates an instance of the express library and assigns it to app
 const app = express();
-app.use(cors());
+
+
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3000'
+}));
+// app.use(cors());
 app.use(express.json());
 
 
+const sess = {
+    secret: 'keyboard cat',
+    cookie: {}
+}
 
-app.get('/hello', (req, res) => { res.send('Hello World!') })
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+}
+
+app.use(session(sess))
+
 //give the user controller the app conponent
 userController(app)
 app.listen(4000);

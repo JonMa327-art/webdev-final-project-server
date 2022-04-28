@@ -42,27 +42,86 @@ const createUser = async (req, res) => {
     res.json(insertedUser)
 }
 
+const signUpUser = async (req, res) => {
+    const user = req.body;
+
+    //needs to check if the user has already been made
+    const existingUser = await usersDao.findUserByEmail(user.email)
+
+    //if the user was found, return an error
+    if (existingUser.length >= 1) {
+        res.sendStatus(403)
+    }
+    //else create the user
+    else {
+        createUser(req, res)
+    }
+}
+
+const loginUser = async (req, res) => {
+    const user = req.body;
+
+    //needs to check if the user has already been made
+    console.log(user)
+    const existingUser = await usersDao.findUserBycredentials(user.username, user.password)
+    if (existingUser) {
+        req.session['currentUser'] = existingUser;
+
+        return res.sendStatus(200);
+    }
+    //else the user does not exist
+    else {
+        return res.sendStatus(503)
+    }
+}
+
+
+const profile = async (req, res) => {
+    const currentUser = req.session['currentUser']
+    console.log(currentUser);
+    console.log(req.session['currentUser']);
+    if (currentUser) {
+        res.json(currentUser)
+    }
+    else {
+        res.sendStatus(503)
+        console.log("profile Fail");
+    }
+}
+
+const logout = (req, res) => {
+    return res.sendStatus(200);
+    if (req.session['currentUser']) {
+        req.session['currentUser'] = null;
+        return res.sendStatus(200);
+    }
+    else {
+        return res.sendStatus(503)
+    }
+}
+
 //Updates a User
 const updateUser = async (req, res) => {
+    //get the email of the user to update
+    const user = req.body;
 
-    //get the id of the user from the request
-    const UserdIdToUpdate = req.params.tid;
 
     //makes an updated user
     const updatedUser = req.body;
 
     //sends a request to the database to update the user. give them the id of the user and the user themeslves
-    const status = await usersDao.updateUser(UserdIdToUpdate, updatedUser);
+    const status = await usersDao.updateUser(user.email, updatedUser);
+    req.session['currentUser'] = status;
 
     //sends back the user update
-    res.send(status);
+    return res.sendStatus(200)
 }
 
 
 //Deletes a user
 const deleteUser = async (req, res) => {
     //gets the id of the user to delete
-    const userIdToDelete = req.params.tid;
+    const userIdToDelete = req.params.uid;
 
     const status = await usersDao.deleteUser(userIdToDelete);
     //filters the users based on the id given
@@ -74,6 +133,10 @@ const deleteUser = async (req, res) => {
 
 //exports these functions so that the front end of the application can call these to interact with that data
 export default (app) => {
+    app.post('/api/signup', signUpUser);
+    app.post('/api/login', loginUser);
+    app.post('/api/logout', logout);
+    app.post('/api/profile', profile);
     app.post('/api/users', createUser);
     app.post('/api/users/credentials', findUserBycredentials)
     app.get('/api/users', findAllUsers);
