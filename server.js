@@ -19,6 +19,8 @@ import reviewController from "./controllers/review_controller.js";
 //connects to the webdevFP database
 mongoose.connect('mongodb://localhost:27017/webdevFP');
 
+const app = express();
+
 //express() creates an instance of the express library and assigns it to app
 app.use(cors({
     credentials: true,
@@ -32,8 +34,6 @@ const sess = {
     secret: 'keyboard cat',
     cookie: {}
 }
-const app = express();
-
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
