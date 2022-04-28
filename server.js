@@ -14,13 +14,12 @@ import mongoose from 'mongoose';
 //imports the controllers
 import userController from './controllers/user_controller.js';
 
+import reviewController from "./controllers/review_controller.js";
+
 //connects to the webdevFP database
 mongoose.connect('mongodb://localhost:27017/webdevFP');
 
 //express() creates an instance of the express library and assigns it to app
-const app = express();
-
-
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:3000'
@@ -33,6 +32,8 @@ const sess = {
     secret: 'keyboard cat',
     cookie: {}
 }
+const app = express();
+
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
@@ -41,6 +42,6 @@ if (app.get('env') === 'production') {
 
 app.use(session(sess))
 
-//give the user controller the app conponent
 userController(app)
+reviewController(app)
 app.listen(4000);
