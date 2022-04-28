@@ -2,6 +2,9 @@
 // Can do it this way since we added  "type": "module" to package.json
 import express from 'express';
 
+// const session = require('express-session');
+import session from 'express-session';
+
 //allows resources to be shared acrcoss domains
 import cors from 'cors';
 
@@ -10,7 +13,6 @@ import mongoose from 'mongoose';
 
 //imports the controllers
 import userController from './controllers/user_controller.js';
-import { response } from 'express';
 
 import reviewController from "./controllers/review_controller.js";
 
@@ -18,13 +20,28 @@ import reviewController from "./controllers/review_controller.js";
 mongoose.connect('mongodb://localhost:27017/webdevFP');
 
 //express() creates an instance of the express library and assigns it to app
-const app = express();
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3000'
+}));
+// app.use(cors());
 app.use(express.json());
 
 
+const sess = {
+    secret: 'keyboard cat',
+    cookie: {}
+}
+const app = express();
 
-app.get('/hello', (req, res) => { res.send('Hello World!') })
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+}
+
+app.use(session(sess))
+
 userController(app)
 reviewController(app)
 app.listen(4000);
