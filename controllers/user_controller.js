@@ -62,7 +62,6 @@ const loginUser = async (req, res) => {
     const user = req.body;
 
     //needs to check if the user has already been made
-    console.log(user)
     const existingUser = await usersDao.findUserBycredentials(user.username, user.password)
     if (existingUser) {
         req.session['currentUser'] = existingUser;
@@ -78,14 +77,11 @@ const loginUser = async (req, res) => {
 
 const profile = async (req, res) => {
     const currentUser = req.session['currentUser']
-    console.log(currentUser);
-    console.log(req.session['currentUser']);
     if (currentUser) {
         res.json(currentUser)
     }
     else {
         res.sendStatus(503)
-        console.log("profile Fail");
     }
 }
 
@@ -102,15 +98,12 @@ const logout = (req, res) => {
 
 //Updates a User
 const updateUser = async (req, res) => {
-    //get the email of the user to update
-    const user = req.body;
-
-
     //makes an updated user
-    const updatedUser = req.body;
+    const updatedUserInfo = req.body;
 
     //sends a request to the database to update the user. give them the id of the user and the user themeslves
-    const status = await usersDao.updateUser(user.email, updatedUser);
+    const status = await usersDao.updateUser(updatedUserInfo.email, updatedUserInfo);
+    console.log(status)
     req.session['currentUser'] = status;
 
     //sends back the user update

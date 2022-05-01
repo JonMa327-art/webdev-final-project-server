@@ -24,12 +24,9 @@ const createUser = async (user) => {
 }
 
 //updates a user
-// const updateUser = async (uid, user) => {
-//     return await userModel.updateOne({ _id: uid }, { $set: user })
-// }
-
-
 const updateUser = async (userEmail, user) => {
+    console.log("dao" + userEmail)
+    console.log(user)
     return await userModel.updateOne({ email: userEmail }, { $set: user })
 }
 //updates a user
