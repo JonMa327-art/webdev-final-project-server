@@ -63,7 +63,6 @@ const loginUser = async (req, res) => {
 
     //needs to check if the user has already been made
     const existingUser = await usersDao.findUserBycredentials(user.username, user.password)
-    console.log("logging in " + existingUser)
     if (existingUser) {
         req.session['currentUser'] = existingUser;
 
@@ -78,7 +77,6 @@ const loginUser = async (req, res) => {
 
 const profile = async (req, res) => {
     const currentUser = req.session['currentUser']
-    console.log("profile " + JSON.stringify(currentUser))
     if (currentUser) {
         res.json(currentUser)
     }
